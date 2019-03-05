@@ -42,7 +42,7 @@ function start() {
         inquirer.prompt([
             {
                 type: "input",
-                message: "What is the ID of the product you would like to buy?",
+                message: "\nWhat is the ID of the product you would like to buy?",
                 name: "itemID"
             },
         ])
@@ -58,7 +58,7 @@ function start() {
                         for (var i = 0; i < res.length; i++) {
                             price = res[i].price;
                             stock = res[i].stock_quantity;
-                            console.log("\nYou have selected the following item: ");
+                            console.log("\nYou have selected the following item: \n");
                             console.table(res);
                             update();
                         }
@@ -72,7 +72,7 @@ function update() {
     inquirer.prompt([
         {
             type: "input",
-            message: "How many of this product would you like to buy?",
+            message: "\nHow many of this product would you like to buy?",
             name: "quantity"
         },
     ])
@@ -87,7 +87,7 @@ function update() {
                         if (err) throw err;
                         // console.log(stock)
                         console.log("Item purchased successfully!\n");
-                        console.log("Your total is $" + answer.quantity * price);
+                        console.log("Your total is $" + answer.quantity * price + "\n");
                         askAgain();
                     }
                 )
@@ -116,7 +116,7 @@ function askAgain() {
             if (answer.newPurchase === "Yes") {
                 showProducts();
             } else {
-                console.log("Thank you for stopping by!")
+                console.log("\nThank you for stopping by! Have a great day!");
                 connection.end();
             }
 

@@ -3,6 +3,7 @@ var inquirer = require("inquirer");
 var price;
 var userAnswer;
 var stock;
+var notValid = 0;
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -65,7 +66,7 @@ function start() {
                 )
             });
     });
-}
+};
 
 function update() {
     inquirer.prompt([
@@ -76,27 +77,49 @@ function update() {
         },
     ])
         .then(function (answer) {
-            if (answer.quantity < stock) {
+            if (answer.quantity <= stock) {
                 connection.query(
                     "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?",
                     [
                         answer.quantity, userAnswer
                     ],
-                    function (err, res) {
+                    function (err, ) {
                         if (err) throw err;
                         // console.log(stock)
                         console.log("Item purchased successfully!\n");
                         console.log("Your total is $" + answer.quantity * price);
-                        showProducts();
+                        askAgain();
                     }
                 )
-            } else if (answer.quantity > stock) {
+            }
+            else if (answer.quantity > stock) {
                 console.log("\nInsufficient quantity. Please review order and try again.");
                 showProducts();
-            } else if (answer.quantity === 0) {
+            }
+            else if (answer.quantity <= notValid) {
                 console.log("\nNot a valid entry.");
                 showProducts();
             }
         });
-}
+};
+
+function askAgain() {
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Would you like to purchase another item?",
+            choices: ["Yes", "No"],
+            name: "newPurchase"
+        },
+    ])
+        .then(function (answer) {
+            if (answer.newPurchase === "Yes") {
+                showProducts();
+            } else {
+                console.log("Thank you for stopping by!")
+                connection.end();
+            }
+
+        });
+};
 

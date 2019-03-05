@@ -32,37 +32,41 @@ function showProducts() {
 };
 
 function start() {
-    inquirer.prompt([
-        {
-            type: "input",
-            message: "What is the ID of the product you would like to buy?",
-            name: "itemID"
-        },
-        {
-            type: "input",
-            message: "How many of this product would you like to buy?",
-            name: "quantity"
-        }
-    ])
-        .then(function (answer) {
-            for(var i = 0; i < answer.itemID; i++){
-                if(answer.itemID === 1)
-                console.log("Fag")
+    connection.query("SELECT * FROM products", function (err, results) {
+        if (err) throw err;
+
+
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "What is the ID of the product you would like to buy?",
+                name: "itemID"
+            },
+            {
+                type: "input",
+                message: "How many of this product would you like to buy?",
+                name: "quantity"
             }
-            connection.query(
-                "UPDATE products SET ? WHERE ?",
-                [
-                    {stock_quantity: answer.quantity
-                    },
-                    {}
-                ],
-                function(err) {
-                    if(err) throw err;
-                    console.log("Item purchased successfully!")
-                    showProducts();
-                    start();
-                } 
-            )
-        })
+        ])
+            .then(function (answer) {
+                if(answer.quantity > )
+                // var chosentItem;
+                // for (var i = 0; i < results.length; i++){
+                //     if(results[i].stock)
+                // }
+                // var newQuantity = products.stock_quantity - answer.quantity;
+                connection.query(
+                    "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?",
+                    [
+                        answer.quantity, answer.itemID
+                    ],
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Item purchased successfully!")
+                        showProducts();
+                    }
+                )
+            });
+    });
 }
 

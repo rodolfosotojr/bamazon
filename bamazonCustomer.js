@@ -1,9 +1,12 @@
+//node_modules packages required for the app to work
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+//global variables
 var price;
 var userAnswer;
 var stock;
 
+//create a variable connection to the mysql connection method to refer down below
 var connection = mysql.createConnection({
     host: "localhost",
 
@@ -18,6 +21,7 @@ var connection = mysql.createConnection({
     database: "bamazon_db"
 });
 
+//connect to server and throw error. upon connecting, run the showProducts function 
 connection.connect(function (err, ) {
     if (err) throw err;
 
@@ -25,6 +29,7 @@ connection.connect(function (err, ) {
     showProducts();
 });
 
+//function that displays the table from my database and runs the start function
 function showProducts() {
     connection.query(
         "SELECT * FROM bamazon_db.products;", function (err, res) {
@@ -34,6 +39,7 @@ function showProducts() {
     )
 };
 
+//function that queries my table and includes a call back function after the data is retreived from the user
 function start() {
     connection.query("SELECT * FROM products", function (err, ) {
         if (err) throw err;
@@ -46,23 +52,27 @@ function start() {
             },
         ])
             .then(function (answer) {
+                //assign the value to userAnswer for my global variable to be called on later
                 userAnswer = answer.itemID;
                 connection.query(
                     "SELECT  * FROM products WHERE id = ?",
                     [
+                        //the userAnswer was delcared and given a value within this function
                         userAnswer
                     ],
                     function (err, res) {
                         if (err) throw err;
-                        
+                        //if my response returns and empty array, I would alert the user of the invalid response
                         if (res.length < 1) {
                             console.log("\nYou have selected an invalid response. Please try again.\n");
                             start();
                         } else {
+                            //assign values to my global variables to then call on them at a later time
                             price = res[0].price;
                             stock = res[0].stock_quantity;
                             console.log("\nYou have selected the following item: \n");
                             console.table(res);
+                            //run the update function once the selections have been made
                             update();
                         }
                     }
@@ -71,6 +81,7 @@ function start() {
     });
 };
 
+//update function that updates the table from my server
 function update() {
     inquirer.prompt([
         {
@@ -110,6 +121,7 @@ function update() {
         });
 };
 
+//funciton that will ask the user if they would like to purchase another item or end their transactions
 function askAgain() {
     inquirer.prompt([
         {

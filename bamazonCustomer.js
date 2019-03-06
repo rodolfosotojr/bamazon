@@ -3,7 +3,6 @@ var inquirer = require("inquirer");
 var price;
 var userAnswer;
 var stock;
-var notValid = 0;
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -15,7 +14,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "Monica12!",
+    password: "password",
     database: "bamazon_db"
 });
 
@@ -48,16 +47,20 @@ function start() {
         ])
             .then(function (answer) {
                 userAnswer = answer.itemID;
-                var query = connection.query(
+                connection.query(
                     "SELECT  * FROM products WHERE id = ?",
                     [
                         userAnswer
                     ],
                     function (err, res) {
                         if (err) throw err;
-                        for (var i = 0; i < res.length; i++) {
-                            price = res[i].price;
-                            stock = res[i].stock_quantity;
+                        
+                        if (res.length < 1) {
+                            console.log("\nYou have selected an invalid response. Please try again.\n");
+                            start();
+                        } else {
+                            price = res[0].price;
+                            stock = res[0].stock_quantity;
                             console.log("\nYou have selected the following item: \n");
                             console.table(res);
                             update();
@@ -77,7 +80,12 @@ function update() {
         },
     ])
         .then(function (answer) {
-            if (answer.quantity <= stock) {
+
+            if (answer.quantity <= 0) {
+                console.log("\nNot a valid entry.");
+                showProducts();
+
+            } else if (answer.quantity <= stock) {
                 connection.query(
                     "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?",
                     [
@@ -91,15 +99,14 @@ function update() {
                         askAgain();
                     }
                 )
-            }
-            else if (answer.quantity > stock) {
+            } else if (answer.quantity > stock && stock === 0) {
+                console.log("\n Sorry but we are all out of this item. Come back another day.\n");
+                askAgain();
+            } else if (answer.quantity > stock) {
                 console.log("\nInsufficient quantity. Please review order and try again.");
                 showProducts();
             }
-            else if (answer.quantity <= notValid) {
-                console.log("\nNot a valid entry.");
-                showProducts();
-            }
+
         });
 };
 

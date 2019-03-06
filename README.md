@@ -10,8 +10,8 @@ bamazonCustomer is a simple application using mySQL. The database bamazon_db has
 ## Using the app
 On the command line select a valid ID from the table presented:
 1. Once you have selected the ID, put the amount you would like of the specific item.
-![](start_game).png)
+![](/images/start_game).png)
 2. 
-![](insufficient_quantity.png)
+![](/images/insufficient_quantity.png)
 3. 
-![](out_of_stock)
+![](/images/out_of_stock)
